@@ -7,6 +7,9 @@
 // The line was written for the judge brief in the bounty rules: on subject,
 // a real laugh with a surprise turn, a concrete recognisable Monday detail,
 // one clean breath, and fresh — no recycled robot joke.
+//
+// Length is counted in code points ([...line].length), not UTF-16 code units,
+// so the count matches the judge's 140-character cap exactly.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
@@ -16,6 +19,12 @@ const LINE =
 
 const MAX_CHARS = 140;
 
+// Length in Unicode code points, so the count matches a 140-character cap
+// the way a judge counts characters (one emoji, one character).
+function charCount(line: string): number {
+  return [...line].length;
+}
+
 function validate(line: string): void {
   if (line.trim().length === 0) {
     throw new Error("entry must not be blank");
@@ -23,8 +32,11 @@ function validate(line: string): void {
   if (line.includes("\n") || line.includes("\r")) {
     throw new Error("entry must be exactly one line");
   }
-  if (line.length > MAX_CHARS) {
-    throw new Error(`entry is ${line.length} chars, over the ${MAX_CHARS} cap`);
+  const n = charCount(line);
+  if (n > MAX_CHARS) {
+    throw new Error(
+      `entry is ${n} characters (code points), over the ${MAX_CHARS}-character cap — shorten it by at least ${n - MAX_CHARS}`,
+    );
   }
 }
 
@@ -39,4 +51,4 @@ if (written !== LINE) {
   throw new Error("round-trip mismatch: file content differs from the entry");
 }
 validate(written);
-console.log(`wrote ${LINE.length} chars to ${outPath}`);
+console.log(`wrote ${charCount(LINE)} characters to ${outPath}`);

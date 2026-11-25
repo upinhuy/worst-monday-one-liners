@@ -29,6 +29,9 @@ node main.ts out.txt    # or to a path of your choice
 validates the line — exactly one line, 1–140 characters, not blank — writes it,
 then reads it back and re-validates, so what lands on disk is exactly the entry.
 
+Length is counted per Unicode code point (`[...line].length`), not per UTF-16
+code unit, so the count matches the judge's 140-character cap exactly.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
